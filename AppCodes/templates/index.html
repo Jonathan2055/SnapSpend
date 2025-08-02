@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Invoice Manager{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        {% if current_user.is_authenticated %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1 class="display-4">Welcome back, {{ current_user.username }}!</h1>
+                    <p class="lead text-muted">Manage your invoices and track your expenses with AI-powered extraction.</p>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5 class="card-title">Monthly Spending</h5>
+                                    <h2 class="mb-0">${{ "%.2f"|format(monthly_total) }}</h2>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-dollar-sign fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5 class="card-title">Total Transactions</h5>
+                                    <h2 class="mb-0">{{ recent_transactions|length }}</h2>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-receipt fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5 class="card-title">Quick Upload</h5>
+                                    <a href="{{ url_for('upload_file') }}" class="btn btn-light btn-sm">
+                                        <i class="fas fa-upload me-1"></i>Upload Invoice
+                                    </a>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-cloud-upload-alt fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if recent_transactions %}
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Recent Transactions</h5>
+                            <a href="{{ url_for('transactions') }}" class="btn btn-outline-primary btn-sm">View All</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Amount</th>
+                                            <th>Invoice Date</th>
+                                            <th>Items</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for transaction in recent_transactions %}
+                                        <tr>
+                                            <td>{{ transaction.processed_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                            <td class="text-success fw-bold">${{ "%.2f"|format(transaction.total_amount) }}</td>
+                                            <td>
+                                                {% if transaction.invoice_date %}
+                                                    {{ transaction.invoice_date.strftime('%Y-%m-%d') }}
+                                                {% else %}
+                                                    <span class="text-muted">N/A</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if transaction.items_json %}
+                                                    {% set items = transaction.items_json|from_json %}
+                                                    {% if items %}
+                                                        <span class="badge bg-secondary">{{ items|length }} items</span>
+                                                    {% else %}
+                                                        <span class="text-muted">No items</span>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="text-muted">No items</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body text-center py-5">
+                            <i class="fas fa-receipt fa-4x text-muted mb-3"></i>
+                            <h4>No transactions yet</h4>
+                            <p class="text-muted">Upload your first invoice to get started with expense tracking.</p>
+                            <a href="{{ url_for('upload_file') }}" class="btn btn-primary">
+                                <i class="fas fa-upload me-1"></i>Upload Invoice
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+        {% else %}
+            <div class="row">
+                <div class="col-lg-6 mx-auto text-center">
+                    <h1 class="display-4 mb-4">Invoice Manager</h1>
+                    <p class="lead mb-4">AI-powered invoice processing and expense tracking made simple.</p>
+                    
+                    <div class="row mb-5">
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-camera fa-3x text-primary mb-3"></i>
+                                    <h5>OCR Processing</h5>
+                                    <p class="text-muted">Upload invoice images and extract text automatically</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-brain fa-3x text-success mb-3"></i>
+                                    <h5>AI Extraction</h5>
+                                    <p class="text-muted">Smart data extraction using advanced AI models</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-chart-line fa-3x text-info mb-3"></i>
+                                    <h5>Expense Tracking</h5>
+                                    <p class="text-muted">Track spending and get personalized financial advice</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg me-md-2">
+                            <i class="fas fa-user-plus me-1"></i>Get Started
+                        </a>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

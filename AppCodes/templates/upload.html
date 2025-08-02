@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Invoice - Invoice Manager{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-upload me-2"></i>Upload Invoice</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Select Invoice Image</label>
+                        <input type="file" class="form-control" id="file" name="file" 
+                               accept="image/*" required>
+                        <div class="form-text">
+                            Supported formats: PNG, JPG, JPEG, GIF, BMP (Max size: 16MB)
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary" id="uploadBtn">
+                            <i class="fas fa-upload me-1"></i>Process Invoice
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="mt-4">
+                    <h6>How it works:</h6>
+                    <ol class="text-muted">
+                        <li>Upload a clear image of your invoice</li>
+                        <li>Our OCR technology extracts the text</li>
+                        <li>AI processes the data to identify key information</li>
+                        <li>Transaction is automatically saved to your account</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('file').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // You could add image preview here if needed
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+document.querySelector('form').addEventListener('submit', function(e) {
+    const btn = document.getElementById('uploadBtn');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Processing...';
+    btn.disabled = true;
+});
+</script>
+{% endblock %}
