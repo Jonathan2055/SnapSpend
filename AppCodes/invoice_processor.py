@@ -45,7 +45,7 @@ def extract_text_from_image(image_path):
         raise Exception("Failed to extract text from image")
 
 def extract_invoice_data(text):
-    GEMINI_API_KEY = "AIzaSyBZYmcpjGwVadkp6xkaE_iLxMqP1Md_70I"
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
     GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 
     prompt = f"""
