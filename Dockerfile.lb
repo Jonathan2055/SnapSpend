@@ -1,0 +1,24 @@
+# FROM haproxy:latest
+
+# COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
+
+# CMD ["haproxy", "-f", "/usr/local/etc/haproxy/haproxy.cfg"]
+# Start from the official Ubuntu image
+FROM ubuntu:22.04
+
+# Prevent interactive prompts during package installs
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update and install required packages
+RUN apt-get update && \
+    apt-get install -y haproxy curl && \
+    apt-get clean
+
+# Copy your custom HAProxy configuration file into the image
+COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
+
+# Expose the HAProxy port
+EXPOSE 80
+
+# Run HAProxy using the config file
+CMD ["haproxy", "-f", "/usr/local/etc/haproxy/haproxy.cfg"]
